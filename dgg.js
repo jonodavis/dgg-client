@@ -27,7 +27,6 @@ ws.on('message', function incoming(data) {
     }
     if (msg.features.includes('protected')){
       log(`✔  ${chalk.blue.bold(msg.nick)}: ${msg.data}`)
-      log(msg)
       return;
     }
     if (msg.features.includes('subscriber')) {
