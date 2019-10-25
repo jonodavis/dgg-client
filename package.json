@@ -1,5 +1,5 @@
 {
-  "name": "dgg",
+  "name": "dgg-client",
   "version": "1.0.0",
   "description": "destiny.gg client",
   "private": true,
@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
-    "word-wrap": "^1.2.3",
     "ws": "^7.2.0"
   }
 }
