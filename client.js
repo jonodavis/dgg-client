@@ -30,38 +30,37 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
-    log(`Serving ${chalk.cyan(msg.connectioncount)} connections and ${chalk.cyan(msg.users.length)} users.`)
+    log(
+      `Serving ${chalk.cyan(msg.connectioncount)} connections and ${chalk.cyan(
+        msg.users.length
+      )} users.`
+    );
   }
   if (type === "MSG") {
-    let output = ""
+    let name, data;
 
     if (msg.data.toLowerCase().includes("nsfw")) {
-      output = chalk.red(msg.data)
+      data = chalk.red(msg.data);
     } else {
-      output = msg.data
+      data = msg.data;
     }
 
-    if (msg.features.includes("admin")){
-      output = `${chalk.red.bold(msg.nick)}: ${output}`
-    } 
-    else if (msg.features.includes("flair12")) {
-      output = `${chalk.yellow.bold(msg.nick)}: ${output}`
-    }
-    else if (msg.features.includes("bot")) {
-      output = `🤖 ${chalk.dim(msg.nick)}: ${chalk.dim(output)}`;
-    }
-    else if (msg.features.includes("protected")) {
-      output = `✔ ${chalk.blue.bold(msg.nick)}: ${output}`;
-    }
-    else if (msg.features.includes("subscriber")) {
-      output = `${chalk.blue.bold(msg.nick)}: ${output}`;
+    if (msg.features.includes("admin")) {
+      name = chalk.red.bold(msg.nick);
+    } else if (msg.features.includes("flair12")) {
+      name = chalk.yellow.bold(msg.nick);
+    } else if (msg.features.includes("bot")) {
+      name = `🤖 ${chalk.dim(msg.nick)}`;
+      data = chalk.dim(data);
+    } else if (msg.features.includes("protected")) {
+      name = `✔ ${chalk.blue.bold(msg.nick)}`;
+    } else if (msg.features.includes("subscriber")) {
+      name = chalk.blue.bold(msg.nick);
     } else {
-      output = `${chalk.bold(msg.nick)}: ${output}`;
+      name = chalk.bold(msg.nick);
     }
-
-    log(output);
-    
+    log(name + ": " + data);
   }
 });
 
-log(chalk.cyan(`Connecting to destiny.gg ...`))
+log(chalk.cyan(`Connecting to destiny.gg ...`));
