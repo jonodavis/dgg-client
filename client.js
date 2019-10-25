@@ -32,7 +32,7 @@ const chatLog = blessed.log({
 });
 
 const inputBox = blessed.box({
-  label: "Type your message (press enter to send)",
+  label: "Write something...",
   bottom: "0",
   width: "80%",
   height: 3,
@@ -65,7 +65,6 @@ const userBox = blessed.box({
   }
 });
 
-
 // runs on opening of the websocket
 ws.on("open", function open() {
   chatLog.log(chalk.cyan(`Connected.`));
@@ -92,6 +91,7 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
+    msg.users.sort()
     msg.users.forEach(user => {
       userBox.insertLine(1, user.nick);
     });
@@ -126,7 +126,7 @@ ws.on("message", function incoming(data) {
       name = chalk.bold(msg.nick);
     }
 
-    if (msg.data[0] === '>') {
+    if (msg.data[0] === ">") {
       data = chalk.green(data);
     }
 

@@ -5,4 +5,4 @@ To install the client clone the project and then run `npm install` in the projec
 
 To start the client run `npm start`.
 
-This is currently a read-only client. There is no ability to send messages, only read them.
+The ability to send messages is not currently implemented.
