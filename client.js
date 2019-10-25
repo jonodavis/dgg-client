@@ -51,7 +51,15 @@ const userBox = blessed.box({
   right: "0",
   width: "20%",
   height: "100%",
+  tags: true,
   scrollable: true,
+  alwaysScroll: true,
+  scrollbar: {
+    ch: "",
+    inverse: true
+  },
+  mouse: true,
+  keys: true,
   border: {
     type: "line"
   }
