@@ -125,6 +125,11 @@ ws.on("message", function incoming(data) {
     } else {
       name = chalk.bold(msg.nick);
     }
+
+    if (msg.data[0] === '>') {
+      data = chalk.green(data);
+    }
+
     chatLog.log(name + ": " + data);
   }
 });
