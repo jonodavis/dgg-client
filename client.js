@@ -6,12 +6,13 @@ const ws = new WebSocket("wss://www.destiny.gg/ws");
 
 const screen = blessed.screen({
   smartCSR: true,
-  title: "destiny.gg"
+  title: "destiny.gg",
+  fullUnicode: true
 });
 
 const chatBox = blessed.box({
   label: "destiny.gg",
-  width: "100%",
+  width: "80%",
   height: "100%-3",
   border: {
     type: "line"
@@ -33,7 +34,7 @@ const chatLog = blessed.log({
 const inputBox = blessed.box({
   label: "Type your message (press enter to send)",
   bottom: "0",
-  width: "100%",
+  width: "80%",
   height: 3,
   border: {
     type: "line"
@@ -44,6 +45,18 @@ const input = blessed.textbox({
   parent: inputBox,
   inputOnFocus: true
 });
+
+const userBox = blessed.box({
+  label: "Users",
+  right: "0",
+  width: "20%",
+  height: "100%",
+  scrollable: true,
+  border: {
+    type: "line"
+  }
+});
+
 
 // runs on opening of the websocket
 ws.on("open", function open() {
@@ -71,6 +84,9 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
+    msg.users.forEach(user => {
+      userBox.insertLine(1, user.nick);
+    });
 
     chatLog.log(
       `Serving ${chalk.cyan(msg.connectioncount)} connections and ${chalk.cyan(
@@ -105,7 +121,7 @@ ws.on("message", function incoming(data) {
   }
 });
 
-input.key('enter', () => {
+input.key("enter", () => {
   const text = input.getValue();
   chatLog.log(`{right}${text} <-{/right}`);
   // socket.emit(CHAT_MESSAGE, {
@@ -117,10 +133,11 @@ input.key('enter', () => {
   input.focus();
 });
 
-input.key(['C-c'], () => process.exit(0));
+input.key(["C-c"], () => process.exit(0));
 
 screen.append(chatBox);
 screen.append(inputBox);
+screen.append(userBox);
 
 screen.render();
 
