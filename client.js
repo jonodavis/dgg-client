@@ -1,19 +1,59 @@
 const WebSocket = require("ws");
 const chalk = require("chalk");
-const log = console.log;
+const blessed = require("blessed");
 
 const ws = new WebSocket("wss://www.destiny.gg/ws");
 
+const screen = blessed.screen({
+  smartCSR: true,
+  title: "destiny.gg"
+});
+
+const chatBox = blessed.box({
+  label: "destiny.gg",
+  width: "100%",
+  height: "100%-3",
+  border: {
+    type: "line"
+  }
+});
+
+const chatLog = blessed.log({
+  parent: chatBox,
+  tags: true,
+  scrollable: true,
+  alwaysScroll: true,
+  scrollbar: {
+    ch: "",
+    inverse: true
+  },
+  mouse: true
+});
+
+const inputBox = blessed.box({
+  label: "Type your message (press enter to send)",
+  bottom: "0",
+  width: "100%",
+  height: 3,
+  border: {
+    type: "line"
+  }
+});
+
+const input = blessed.textbox({
+  parent: inputBox,
+  inputOnFocus: true
+});
+
 // runs on opening of the websocket
 ws.on("open", function open() {
-  log(chalk.cyan(`Connected.`));
+  chatLog.log(chalk.cyan(`Connected.`));
 });
 
 // runs on each message received by the websocket
 ws.on("message", function incoming(data) {
   // FORMAT OF DATA:
-  // MSG
-  // {
+  // MSG {
   //   "nick":"bird",
   //   "features":["subscriber","flair9"],
   //   "timestamp":1571967272433,
@@ -21,8 +61,9 @@ ws.on("message", function incoming(data) {
   // }
   const type = data.split(" ")[0];
   let msg = JSON.parse(data.substring(data.indexOf(" ")));
-  let feats = [];
+
   if (type === "NAMES") {
+    // let feats = [];
     // msg.users.forEach(user => {
     //   user.features.forEach(feat => {
     //     if (!feats.includes(feat)) {
@@ -30,7 +71,8 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
-    log(
+
+    chatLog.log(
       `Serving ${chalk.cyan(msg.connectioncount)} connections and ${chalk.cyan(
         msg.users.length
       )} users.`
@@ -59,8 +101,29 @@ ws.on("message", function incoming(data) {
     } else {
       name = chalk.bold(msg.nick);
     }
-    log(name + ": " + data);
+    chatLog.log(name + ": " + data);
   }
 });
 
-log(chalk.cyan(`Connecting to destiny.gg ...`));
+input.key('enter', () => {
+  const text = input.getValue();
+  chatLog.log(`{right}${text} <-{/right}`);
+  // socket.emit(CHAT_MESSAGE, {
+  //   username: name,
+  //   text,
+  // });
+
+  input.clearValue();
+  input.focus();
+});
+
+input.key(['C-c'], () => process.exit(0));
+
+screen.append(chatBox);
+screen.append(inputBox);
+
+screen.render();
+
+input.focus();
+
+chatLog.log(chalk.cyan(`Connecting to destiny.gg ...`));
