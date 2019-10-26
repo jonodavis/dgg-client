@@ -12,7 +12,7 @@ const screen = blessed.screen({
 
 const chatBox = blessed.box({
   label: "destiny.gg",
-  width: "80%",
+  width: "100%-21",
   height: "100%-3",
   border: {
     type: "line"
@@ -34,7 +34,7 @@ const chatLog = blessed.log({
 const inputBox = blessed.box({
   label: "Write something...",
   bottom: "0",
-  width: "80%",
+  width: "100%-21",
   height: 3,
   border: {
     type: "line"
@@ -49,7 +49,7 @@ const input = blessed.textbox({
 const userBox = blessed.box({
   label: "Users",
   right: "0",
-  width: "20%",
+  width: 20,
   height: "100%",
   tags: true,
   scrollable: true,
@@ -91,7 +91,7 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
-    msg.users.sort()
+    msg.users.sort((a, b) => (a.nick < b.nick) ? 1 : -1)
     msg.users.forEach(user => {
       userBox.insertLine(1, user.nick);
     });
@@ -106,28 +106,28 @@ ws.on("message", function incoming(data) {
     let name, data;
 
     if (msg.data.toLowerCase().includes("nsfw")) {
-      data = chalk.red(msg.data);
+      data = `{red-fg}${msg.data}{/}`;
     } else {
       data = msg.data;
     }
 
     if (msg.features.includes("admin")) {
-      name = chalk.red.bold(msg.nick);
+      name = `{red-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("flair12")) {
-      name = chalk.yellow.bold(msg.nick);
+      name = `{yellow-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("bot")) {
-      name = `🤖 ${chalk.dim(msg.nick)}`;
-      data = chalk.dim(data);
+      name = `🤖 {bold}${msg.nick}{/}`;
+      data = `{gray-fg}${data}{/}`;
     } else if (msg.features.includes("protected")) {
-      name = `✔ ${chalk.blue.bold(msg.nick)}`;
+      name = `✔ {blue-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("subscriber")) {
-      name = chalk.blue.bold(msg.nick);
+      name = `{blue-fg}{bold}${msg.nick}{/}`;
     } else {
-      name = chalk.bold(msg.nick);
+      name = `{bold}${msg.nick}{/}`;
     }
 
     if (msg.data[0] === ">") {
-      data = chalk.green(data);
+      data = `{green-fg}${data}{/}`;
     }
 
     chatLog.log(name + ": " + data);
@@ -156,4 +156,4 @@ screen.render();
 
 input.focus();
 
-chatLog.log(chalk.cyan(`Connecting to destiny.gg ...`));
+chatLog.log(`{cyan-fg}Connecting to destiny.gg ...{/}`);
