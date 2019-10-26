@@ -20,13 +20,12 @@ const chatBox = blessed.box({
 });
 
 const chatLog = blessed.log({
-  width: "100%-22",
   parent: chatBox,
   tags: true,
   scrollable: true,
   alwaysScroll: true,
   mouse: true,
-  keys: true,
+  keys: true
 });
 
 const inputBox = blessed.box({
@@ -110,9 +109,10 @@ ws.on("message", function incoming(data) {
     } else if (msg.features.includes("flair12")) {
       name = `{yellow-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("bot")) {
-      name = `🤖 {bold}${msg.nick}{/}`;
+      name = `{bold}${msg.nick}{/}`;
+      data = `{gray-fg}${data}{/}`;
     } else if (msg.features.includes("protected")) {
-      name = `✔ {blue-fg}{bold}${msg.nick}{/}`;
+      name = `{magenta-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("subscriber")) {
       name = `{blue-fg}{bold}${msg.nick}{/}`;
     } else {
@@ -135,13 +135,11 @@ input.key("enter", () => {
     screen.remove(userBox);
     inputBox.width = "100%";
     chatBox.width = "100%";
-    chatLog.width = "100%-1";
     users = false;
   } else if (text === "/users" && !users) {
     screen.append(userBox);
     inputBox.width = "100%-21";
     chatBox.width = "100%-21";
-    chatLog.width = "100%-22";
     users = true;
   } else {
     chatLog.log(`{right}${text} <-{/right}`);
@@ -150,7 +148,6 @@ input.key("enter", () => {
     //   text,
     // });
   }
-  
 
   input.clearValue();
   input.focus();
