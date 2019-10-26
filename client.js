@@ -108,7 +108,9 @@ ws.on("message", function incoming(data) {
     let features = (msg.features || [])
       .filter(e => flairsMap.has(e))
       .map(e => flairsMap.get(e))
+      .sort((a, b) => (a.priority < b.priority ? 1 : -1))
       .reduce((str, e) => e.color, '');
+
     if (features) {
       name = `{${features}-fg}{bold}${msg.nick}{/}`;
     } else {
@@ -160,6 +162,8 @@ input.key(["C-c"], () => process.exit(0));
 screen.append(chatBox);
 screen.append(inputBox);
 screen.append(userBox);
+
+
 
 screen.render();
 
