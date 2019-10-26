@@ -24,10 +24,10 @@ const chatLog = blessed.log({
   tags: true,
   scrollable: true,
   alwaysScroll: true,
-  scrollbar: {
-    ch: "",
-    inverse: true
-  },
+  // scrollbar: {
+  //   ch: "",
+  //   inverse: true
+  // },
   mouse: true
 });
 
@@ -91,7 +91,7 @@ ws.on("message", function incoming(data) {
     //     }
     //   });
     // });
-    msg.users.sort((a, b) => (a.nick < b.nick) ? 1 : -1)
+    msg.users.sort((a, b) => (a.nick < b.nick ? 1 : -1));
     msg.users.forEach(user => {
       userBox.insertLine(1, user.nick);
     });
@@ -117,7 +117,6 @@ ws.on("message", function incoming(data) {
       name = `{yellow-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("bot")) {
       name = `🤖 {bold}${msg.nick}{/}`;
-      data = `{gray-fg}${data}{/}`;
     } else if (msg.features.includes("protected")) {
       name = `✔ {blue-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("subscriber")) {
