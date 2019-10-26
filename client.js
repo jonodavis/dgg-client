@@ -6,6 +6,8 @@ const flairs = require("./flairs.json");
 
 let showUsers = config.showUsers;
 let flairsMap = new Map();
+let userMap = new Map();
+let users = [];
 flairs.forEach(v => flairsMap.set(v.name, v));
 
 const ws = new WebSocket("wss://www.destiny.gg/ws", {
@@ -83,9 +85,12 @@ ws.on("message", function incoming(data) {
   const type = data.split(" ")[0];
   let msg = JSON.parse(data.substring(data.indexOf(" ")));
 
+  // first packet sent by server, used to fill user list
   if (type === "NAMES") {
-    msg.users.sort((a, b) => (a.nick < b.nick ? 1 : -1));
     msg.users.forEach(user => {
+      userMap.set(user.nick, user);
+    });
+    msg.users.sort(userComparator).forEach(user => {
       userBox.insertLine(1, user.nick);
     });
 
@@ -93,6 +98,7 @@ ws.on("message", function incoming(data) {
       `Serving {cyan-fg}${msg.connectioncount}{/} connections and {cyan-fg}${msg.users.length}{/} users.`
     );
   }
+
   if (type === "MSG") {
     let name, data;
 
@@ -109,7 +115,7 @@ ws.on("message", function incoming(data) {
       .filter(e => flairsMap.has(e))
       .map(e => flairsMap.get(e))
       .sort((a, b) => (a.priority < b.priority ? 1 : -1))
-      .reduce((str, e) => e.color, '');
+      .reduce((str, e) => e.color, "");
 
     if (features) {
       name = `{${features}-fg}{bold}${msg.nick}{/}`;
@@ -149,21 +155,49 @@ const send = (eventname, data) => {
   ws.send(`${eventname} ${payload}`);
 };
 
-ws.on("error", function incoming(response) {
-  chatLog.log(response);
-});
+const userComparator = (a, b) => {
+  const u1 = userMap.get(a.nick);
+  const u2 = userMap.get(b.nick);
+  if (!u1 || !u2) return 0;
+  let v1, v2;
 
-// ws.on("upgrade", function incoming(response) {
-//   chatLog.log(response);
-// });
+  v1 = u1.features.includes("admin") || u1.features.includes("vip");
+  v2 = u2.features.includes("admin") || u2.features.includes("vip");
+  if (v1 > v2) return 1;
+  if (v1 < v2) return -1;
+
+  v1 = u1.features.includes("flair11");
+  v2 = u2.features.includes("flair11");
+  if (v1 > v2) return -1;
+  if (v1 < v2) return 1;
+  v1 = u1.features.includes("bot");
+  v2 = u2.features.includes("bot");
+  if (v1 > v2) return -1;
+  if (v1 < v2) return 1;
+
+  v1 = u1.features.includes("flair12") || u1.features.includes("flair12");
+  v2 = u2.features.includes("flair12") || u2.features.includes("flair12");
+  if (v1 > v2) return 1;
+  if (v1 < v2) return -1;
+
+  v1 = u1.features.includes("subscriber") || u1.features.includes("subscriber");
+  v2 = u2.features.includes("subscriber") || u2.features.includes("subscriber");
+  if (v1 > v2) return 1;
+  if (v1 < v2) return -1;
+
+  let u1Nick = u1.nick.toLowerCase(),
+    u2Nick = u2.nick.toLowerCase();
+
+  if (u1Nick < u2Nick) return 1;
+  if (u1Nick > u2Nick) return -1;
+  return 0;
+};
 
 input.key(["C-c"], () => process.exit(0));
 
 screen.append(chatBox);
 screen.append(inputBox);
 screen.append(userBox);
-
-
 
 screen.render();
 
