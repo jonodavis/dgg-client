@@ -2,8 +2,11 @@ const WebSocket = require("ws");
 const blessed = require("blessed");
 const cookie = require("cookie");
 const config = require("./config.json");
+const flairs = require("./flairs.json");
 
 let showUsers = config.showUsers;
+let flairsMap = new Map();
+flairs.forEach(v => flairsMap.set(v.name, v));
 
 const ws = new WebSocket("wss://www.destiny.gg/ws", {
   headers: { Cookie: cookie.serialize("authtoken", config.authtoken) }
@@ -81,14 +84,6 @@ ws.on("message", function incoming(data) {
   let msg = JSON.parse(data.substring(data.indexOf(" ")));
 
   if (type === "NAMES") {
-    // let feats = [];
-    // msg.users.forEach(user => {
-    //   user.features.forEach(feat => {
-    //     if (!feats.includes(feat)) {
-    //       feats.push(feat);
-    //     }
-    //   });
-    // });
     msg.users.sort((a, b) => (a.nick < b.nick ? 1 : -1));
     msg.users.forEach(user => {
       userBox.insertLine(1, user.nick);
@@ -101,38 +96,21 @@ ws.on("message", function incoming(data) {
   if (type === "MSG") {
     let name, data;
 
-    if (msg.data.toLowerCase().includes("nsfw") || msg.data.toLowerCase().includes("nsfl")) {
+    if (
+      msg.data.toLowerCase().includes("nsfw") ||
+      msg.data.toLowerCase().includes("nsfl")
+    ) {
       data = `{red-fg}${msg.data}{/}`;
     } else {
       data = msg.data;
     }
 
-    if (msg.features.includes("flair17")) {
-      name = `{#FCE205-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("admin")) {
-      name = `{#EE1F1F-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("vip")) {
-      name = `{#DB4C1C-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair12")) {
-      name = `{#E79015-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair8")) {
-      name = `{#DD29D2-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair3")) {
-      name = `{#DD29D2-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair1")) {
-      name = `{#2ADDC8-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair13")) {
-      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair9")) {
-      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("subscriber")) {
-      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("bot")) {
-      name = `{#0088CC-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair11")) {
-      name = `{#929292-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("flair18")) {
-      name = `{#B9B9B9-fg}{bold}${msg.nick}{/}`;
+    let features = (msg.features || [])
+      .filter(e => flairsMap.has(e))
+      .map(e => flairsMap.get(e))
+      .reduce((str, e) => e.color, '');
+    if (features) {
+      name = `{${features}-fg}{bold}${msg.nick}{/}`;
     } else {
       name = `{bold}${msg.nick}{/}`;
     }
