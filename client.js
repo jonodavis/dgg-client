@@ -4,7 +4,7 @@ const cookie = require("cookie");
 const auth = require("./auth.json");
 
 const ws = new WebSocket("wss://www.destiny.gg/ws", {
-  headers: { Cookie: cookie.serialize('authtoken', auth.authtoken) }
+  headers: { Cookie: cookie.serialize("authtoken", auth.authtoken) }
 });
 
 const screen = blessed.screen({
@@ -93,9 +93,7 @@ ws.on("message", function incoming(data) {
     });
 
     chatLog.log(
-      `Serving ${chalk.cyan(msg.connectioncount)} connections and ${chalk.cyan(
-        msg.users.length
-      )} users.`
+      `Serving {cyan-fg}${msg.connectioncount}{/} connections and {cyan-fg}${msg.users.length}{/} users.`
     );
   }
   if (type === "MSG") {
@@ -145,16 +143,16 @@ input.key("enter", () => {
     chatBox.width = "100%-21";
     users = true;
   } else {
-    send("MSG", {data: text})
+    send("MSG", { data: text });
   }
   input.clearValue();
   input.focus();
 });
 
 const send = (eventname, data) => {
-  const payload = (typeof data === 'string') ? data : JSON.stringify(data)
-  ws.send(`${eventname} ${payload}`)
-}
+  const payload = typeof data === "string" ? data : JSON.stringify(data);
+  ws.send(`${eventname} ${payload}`);
+};
 
 ws.on("error", function incoming(response) {
   chatLog.log(response);
