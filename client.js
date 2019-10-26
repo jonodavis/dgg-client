@@ -1,8 +1,12 @@
 const WebSocket = require("ws");
 const chalk = require("chalk");
 const blessed = require("blessed");
+const cookie = require("cookie");
+const auth = require("./auth.json");
 
-const ws = new WebSocket("wss://www.destiny.gg/ws");
+const ws = new WebSocket("wss://www.destiny.gg/ws", {
+  headers: { Cookie: cookie.serialize('authtoken', auth.authtoken) }
+});
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -60,7 +64,7 @@ const userBox = blessed.box({
 
 // runs on opening of the websocket
 ws.on("open", function open() {
-  chatLog.log(chalk.cyan(`Connected.`));
+  chatLog.log(`{cyan-fg}Connected.{/}`);
 });
 
 // runs on each message received by the websocket
@@ -142,16 +146,24 @@ input.key("enter", () => {
     chatBox.width = "100%-21";
     users = true;
   } else {
-    chatLog.log(`{right}${text} <-{/right}`);
-    // socket.emit(CHAT_MESSAGE, {
-    //   username: name,
-    //   text,
-    // });
+    send("MSG", {data: text})
   }
-
   input.clearValue();
   input.focus();
 });
+
+const send = (eventname, data) => {
+  const payload = (typeof data === 'string') ? data : JSON.stringify(data)
+  ws.send(`${eventname} ${payload}`)
+}
+
+ws.on("error", function incoming(response) {
+  chatLog.log(response);
+});
+
+// ws.on("upgrade", function incoming(response) {
+//   chatLog.log(response);
+// });
 
 input.key(["C-c"], () => process.exit(0));
 

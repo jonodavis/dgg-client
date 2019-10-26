@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "blessed": "^0.1.81",
-    "chalk": "^2.4.2",
+    "cookie": "^0.4.0",
     "ws": "^7.2.0"
   }
 }
