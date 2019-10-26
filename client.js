@@ -1,10 +1,12 @@
 const WebSocket = require("ws");
 const blessed = require("blessed");
 const cookie = require("cookie");
-const auth = require("./auth.json");
+const config = require("./config.json");
+
+let showUsers = config.showUsers;
 
 const ws = new WebSocket("wss://www.destiny.gg/ws", {
-  headers: { Cookie: cookie.serialize("authtoken", auth.authtoken) }
+  headers: { Cookie: cookie.serialize("authtoken", config.authtoken) }
 });
 
 const screen = blessed.screen({
@@ -99,23 +101,38 @@ ws.on("message", function incoming(data) {
   if (type === "MSG") {
     let name, data;
 
-    if (msg.data.toLowerCase().includes("nsfw")) {
+    if (msg.data.toLowerCase().includes("nsfw") || msg.data.toLowerCase().includes("nsfl")) {
       data = `{red-fg}${msg.data}{/}`;
     } else {
       data = msg.data;
     }
 
-    if (msg.features.includes("admin")) {
-      name = `{red-fg}{bold}${msg.nick}{/}`;
+    if (msg.features.includes("flair17")) {
+      name = `{#FCE205-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("admin")) {
+      name = `{#EE1F1F-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("vip")) {
+      name = `{#DB4C1C-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("flair12")) {
-      name = `{yellow-fg}{bold}${msg.nick}{/}`;
-    } else if (msg.features.includes("bot")) {
-      name = `{bold}${msg.nick}{/}`;
-      data = `{gray-fg}${data}{/}`;
-    } else if (msg.features.includes("protected")) {
-      name = `{magenta-fg}{bold}${msg.nick}{/}`;
+      name = `{#E79015-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair8")) {
+      name = `{#DD29D2-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair3")) {
+      name = `{#DD29D2-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair1")) {
+      name = `{#2ADDC8-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair13")) {
+      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair9")) {
+      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
     } else if (msg.features.includes("subscriber")) {
-      name = `{blue-fg}{bold}${msg.nick}{/}`;
+      name = `{#59AEEA-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("bot")) {
+      name = `{#0088CC-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair11")) {
+      name = `{#929292-fg}{bold}${msg.nick}{/}`;
+    } else if (msg.features.includes("flair18")) {
+      name = `{#B9B9B9-fg}{bold}${msg.nick}{/}`;
     } else {
       name = `{bold}${msg.nick}{/}`;
     }
@@ -128,20 +145,18 @@ ws.on("message", function incoming(data) {
   }
 });
 
-let users = true;
-
 input.key("enter", () => {
   const text = input.getValue();
-  if (text === "/users" && users) {
+  if (text === "/users" && showUsers) {
     screen.remove(userBox);
     inputBox.width = "100%";
     chatBox.width = "100%";
-    users = false;
-  } else if (text === "/users" && !users) {
+    showUsers = false;
+  } else if (text === "/users" && !showUsers) {
     screen.append(userBox);
     inputBox.width = "100%-21";
     chatBox.width = "100%-21";
-    users = true;
+    showUsers = true;
   } else {
     send("MSG", { data: text });
   }
