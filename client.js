@@ -1,5 +1,4 @@
 const WebSocket = require("ws");
-const chalk = require("chalk");
 const blessed = require("blessed");
 const cookie = require("cookie");
 const auth = require("./auth.json");
