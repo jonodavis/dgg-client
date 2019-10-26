@@ -20,15 +20,13 @@ const chatBox = blessed.box({
 });
 
 const chatLog = blessed.log({
+  width: "100%-22",
   parent: chatBox,
   tags: true,
   scrollable: true,
   alwaysScroll: true,
-  // scrollbar: {
-  //   ch: "",
-  //   inverse: true
-  // },
-  mouse: true
+  mouse: true,
+  keys: true,
 });
 
 const inputBox = blessed.box({
@@ -54,10 +52,6 @@ const userBox = blessed.box({
   tags: true,
   scrollable: true,
   alwaysScroll: true,
-  scrollbar: {
-    ch: "",
-    inverse: true
-  },
   mouse: true,
   keys: true,
   border: {
@@ -133,13 +127,30 @@ ws.on("message", function incoming(data) {
   }
 });
 
+let users = true;
+
 input.key("enter", () => {
   const text = input.getValue();
-  chatLog.log(`{right}${text} <-{/right}`);
-  // socket.emit(CHAT_MESSAGE, {
-  //   username: name,
-  //   text,
-  // });
+  if (text === "/users" && users) {
+    screen.remove(userBox);
+    inputBox.width = "100%";
+    chatBox.width = "100%";
+    chatLog.width = "100%-1";
+    users = false;
+  } else if (text === "/users" && !users) {
+    screen.append(userBox);
+    inputBox.width = "100%-21";
+    chatBox.width = "100%-21";
+    chatLog.width = "100%-22";
+    users = true;
+  } else {
+    chatLog.log(`{right}${text} <-{/right}`);
+    // socket.emit(CHAT_MESSAGE, {
+    //   username: name,
+    //   text,
+    // });
+  }
+  
 
   input.clearValue();
   input.focus();
