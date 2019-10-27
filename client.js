@@ -35,6 +35,7 @@ const chatLog = blessed.log({
   tags: true,
   scrollable: true,
   alwaysScroll: true,
+  scrollOnInput: false,
   mouse: true,
   keys: true
 });
@@ -59,11 +60,6 @@ const userBox = blessed.box({
   right: "0",
   width: 20,
   height: "100%",
-  tags: true,
-  scrollable: true,
-  alwaysScroll: true,
-  mouse: true,
-  keys: true,
   border: {
     type: "line"
   }
@@ -76,11 +72,6 @@ userList = blessed.list({
   alwaysScroll: true,
   mouse: true,
   keys: true,
-  "style": {
-    selected: {
-      bg: "white",
-    }
-  },
   invertSelected: false,
 })
 
