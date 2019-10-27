@@ -1,13 +1,14 @@
 const WebSocket = require("ws");
 const blessed = require("blessed");
 const cookie = require("cookie");
+const emojiRegex = require('emoji-regex/es2015/index.js');
+const emojiRegexText = require('emoji-regex/es2015/text.js');
 const config = require("./config.json");
 const flairs = require("./flairs.json");
 
 let showUsers = config.showUsers;
 let flairsMap = new Map();
 let userMap = new Map();
-let users = [];
 flairs.forEach(v => flairsMap.set(v.name, v));
 
 const ws = new WebSocket("wss://www.destiny.gg/ws", {
@@ -22,7 +23,7 @@ const screen = blessed.screen({
 
 const chatBox = blessed.box({
   label: "destiny.gg",
-  width: "100%-21",
+  width: "100%-20",
   height: "100%-3",
   border: {
     type: "line"
@@ -41,7 +42,7 @@ const chatLog = blessed.log({
 const inputBox = blessed.box({
   label: "Write something...",
   bottom: "0",
-  width: "100%-21",
+  width: "100%-20",
   height: 3,
   border: {
     type: "line"
@@ -84,6 +85,14 @@ ws.on("message", function incoming(data) {
   // }
   const type = data.split(" ")[0];
   let msg = JSON.parse(data.substring(data.indexOf(" ")));
+
+  // remove emojis from message
+  const regex = emojiRegex();
+  let match;
+  while (match = regex.exec(msg.data)) {
+    const emoji = match[0];
+    msg.data = msg.data.replace(emoji, '[emoji]');
+  }
 
   // first packet sent by server, used to fill user list
   if (type === "NAMES") {
@@ -140,8 +149,8 @@ input.key("enter", () => {
     showUsers = false;
   } else if (text === "/users" && !showUsers) {
     screen.append(userBox);
-    inputBox.width = "100%-21";
-    chatBox.width = "100%-21";
+    inputBox.width = "100%-20";
+    chatBox.width = "100%-20";
     showUsers = true;
   } else {
     send("MSG", { data: text });

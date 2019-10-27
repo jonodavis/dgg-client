@@ -13,6 +13,7 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "cookie": "^0.4.0",
+    "emoji-regex": "^8.0.0",
     "ws": "^7.2.0"
   }
 }
