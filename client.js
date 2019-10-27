@@ -1,8 +1,8 @@
 const WebSocket = require("ws");
 const blessed = require("blessed");
 const cookie = require("cookie");
-const emojiRegex = require('emoji-regex/es2015/index.js');
-const emojiRegexText = require('emoji-regex/es2015/text.js');
+const emojiRegex = require("emoji-regex/es2015/index.js");
+const emojiRegexText = require("emoji-regex/es2015/text.js");
 const config = require("./config.json");
 const flairs = require("./flairs.json");
 
@@ -89,9 +89,9 @@ ws.on("message", function incoming(data) {
   // remove emojis from message
   const regex = emojiRegex();
   let match;
-  while (match = regex.exec(msg.data)) {
+  while ((match = regex.exec(msg.data))) {
     const emoji = match[0];
-    msg.data = msg.data.replace(emoji, '[emoji]');
+    msg.data = msg.data.replace(emoji, "[emoji]");
   }
 
   // first packet sent by server, used to fill user list
@@ -99,8 +99,21 @@ ws.on("message", function incoming(data) {
     msg.users.forEach(user => {
       userMap.set(user.nick, user);
     });
+    let userName;
     msg.users.sort(userComparator).forEach(user => {
-      userBox.insertLine(1, user.nick);
+      let userFeatures = (user.features || [])
+        .filter(e => flairsMap.has(e))
+        .map(e => flairsMap.get(e))
+        .sort((a, b) => (a.priority < b.priority ? 1 : -1))
+        .reduce((str, e) => e.color, "");
+
+      if (userFeatures) {
+        userName = `{${userFeatures}-fg}${user.nick}{/}`;
+      } else {
+        userName = user.nick;
+      }
+
+      userBox.insertLine(1, userName);
     });
 
     chatLog.log(
