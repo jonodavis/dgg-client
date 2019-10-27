@@ -1,4 +1,5 @@
 {
-  "authtoken": "YOUR AUTH TOKEN HERE",
-  "showUsers": true
+  "authtoken": "YOUR_AUTH_TOKEN_HERE",
+  "showUsers": true,
+  "username": "YOUR_USERNAME"
 }

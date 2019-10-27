@@ -2,7 +2,7 @@ const WebSocket = require("ws");
 const blessed = require("blessed");
 const cookie = require("cookie");
 const emojiRegex = require("emoji-regex/es2015/index.js");
-const emojiRegexText = require("emoji-regex/es2015/text.js");
+// const emojiRegexText = require("emoji-regex/es2015/text.js");
 const config = require("./config.json");
 const flairs = require("./flairs.json");
 
@@ -40,7 +40,7 @@ const chatLog = blessed.log({
 });
 
 const inputBox = blessed.box({
-  label: "Write something...",
+  label: `Write something ${config.username}...`,
   bottom: "0",
   width: "100%-20",
   height: 3,
@@ -68,6 +68,15 @@ const userBox = blessed.box({
     type: "line"
   }
 });
+
+userList = blessed.list({
+  parent: userBox,
+  tags: true,
+  scrollable: true,
+  alwaysScroll: true,
+  mouse: true,
+  keys: true
+})
 
 // runs on opening of the websocket
 ws.on("open", function open() {
@@ -113,7 +122,7 @@ ws.on("message", function incoming(data) {
         userName = user.nick;
       }
 
-      userBox.insertLine(1, userName);
+      userList.add(userName);
     });
 
     chatLog.log(
@@ -185,33 +194,33 @@ const userComparator = (a, b) => {
 
   v1 = u1.features.includes("admin") || u1.features.includes("vip");
   v2 = u2.features.includes("admin") || u2.features.includes("vip");
-  if (v1 > v2) return 1;
-  if (v1 < v2) return -1;
+  if (v1 > v2) return -1;
+  if (v1 < v2) return 1;
 
   v1 = u1.features.includes("flair11");
   v2 = u2.features.includes("flair11");
-  if (v1 > v2) return -1;
-  if (v1 < v2) return 1;
+  if (v1 > v2) return 1;
+  if (v1 < v2) return -1;
   v1 = u1.features.includes("bot");
   v2 = u2.features.includes("bot");
-  if (v1 > v2) return -1;
-  if (v1 < v2) return 1;
+  if (v1 > v2) return 1;
+  if (v1 < v2) return -1;
 
   v1 = u1.features.includes("flair12") || u1.features.includes("flair12");
   v2 = u2.features.includes("flair12") || u2.features.includes("flair12");
-  if (v1 > v2) return 1;
-  if (v1 < v2) return -1;
+  if (v1 > v2) return -1;
+  if (v1 < v2) return 1;
 
   v1 = u1.features.includes("subscriber") || u1.features.includes("subscriber");
   v2 = u2.features.includes("subscriber") || u2.features.includes("subscriber");
-  if (v1 > v2) return 1;
-  if (v1 < v2) return -1;
+  if (v1 > v2) return -1;
+  if (v1 < v2) return 1;
 
   let u1Nick = u1.nick.toLowerCase(),
     u2Nick = u2.nick.toLowerCase();
 
-  if (u1Nick < u2Nick) return 1;
-  if (u1Nick > u2Nick) return -1;
+  if (u1Nick < u2Nick) return -1;
+  if (u1Nick > u2Nick) return 1;
   return 0;
 };
 
