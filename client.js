@@ -75,7 +75,13 @@ userList = blessed.list({
   scrollable: true,
   alwaysScroll: true,
   mouse: true,
-  keys: true
+  keys: true,
+  "style": {
+    selected: {
+      bg: "white",
+    }
+  },
+  invertSelected: false,
 })
 
 // runs on opening of the websocket
