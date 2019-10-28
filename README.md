@@ -6,4 +6,3 @@ To install the client clone the project and then run `npm install` in the projec
 To start the client run `npm start`.
 
 For full color representaion make sure your terminal supports 256 colors.
-

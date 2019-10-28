@@ -7,6 +7,7 @@ const config = require("./config.json");
 const flairs = require("./flairs.json");
 
 let showUsers = config.showUsers;
+let showTimestamp = config.showTimestamp;
 let flairsMap = new Map();
 let userMap = new Map();
 flairs.forEach(v => flairsMap.set(v.name, v));
@@ -155,7 +156,13 @@ ws.on("message", function incoming(data) {
       data = `{green-fg}${data}{/}`;
     }
 
-    chatLog.log(name + ": " + data);
+    if (showTimestamp) {
+      let timestamp = new Date(msg.timestamp).toUTCString();
+      chatLog.log("[" + timestamp + "] " + name + ": " + data);
+    } else {
+      chatLog.log(name + ": " + data);
+    }
+    
   }
 });
 
@@ -171,6 +178,8 @@ input.key("enter", () => {
     inputBox.width = "100%-20";
     chatBox.width = "100%-20";
     showUsers = true;
+  } else if (text === "/timestamps") {
+    showTimestamp = !showTimestamp;
   } else {
     send("MSG", { data: text });
   }

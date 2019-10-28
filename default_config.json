@@ -1,5 +1,6 @@
 {
   "authtoken": "YOUR_AUTH_TOKEN_HERE",
   "showUsers": true,
-  "username": "YOUR_USERNAME"
+  "username": "YOUR_USERNAME",
+  "showTimestamp": true
 }
