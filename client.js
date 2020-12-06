@@ -12,7 +12,7 @@ let flairsMap = new Map();
 let userMap = new Map();
 flairs.forEach(v => flairsMap.set(v.name, v));
 
-const ws = new WebSocket("wss://www.destiny.gg/ws", {
+const ws = new WebSocket("wss://chat.destiny.gg/ws", {
   headers: { Cookie: cookie.serialize("authtoken", config.authtoken) }
 });
 
